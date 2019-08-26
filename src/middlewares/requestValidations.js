@@ -88,4 +88,28 @@ const validateDelete = (req, res, next) => {
   });
 };
 
-export default { validateTripRequest, validateTrip, validateDelete };
+/**
+   * @function
+   * @description Validates open trip
+   * @static
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {object} next
+   * @returns {object} JSON response
+   */
+const validateOpenTrip = (req, res, next) => {
+  const requestId = req.params.id;
+  models.Request.findOne({ where: { id: requestId } }).then(data => {
+    if (!data) {
+      Responses.setError(404, 'Request does not exist');
+      return Responses.send(res);
+    }
+    if (data.status !== 'open') {
+      Responses.setError(405, 'Your trip cannot be edited. It is closed already!');
+      return Responses.send(res);
+    }
+    next();
+  });
+};
+
+export default { validateTripRequest, validateTrip, validateDelete, validateOpenTrip };

@@ -184,18 +184,12 @@
     },
     "/requests": {
       "post": {
-        "tags": [
-          "request"
-        ],
+        "tags": ["request"],
         "summary": "Book a travel request",
         "description": "This endpoint books a one-way trip request",
         "operationId": "bookTrip",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
         "security": [
           {
             "Bearer": []
@@ -228,14 +222,10 @@
         }
       },
       "get": {
-        "tags": [
-          "request"
-        ],
+        "tags": ["request"],
         "summary": "a user can view all request he/she made",
         "description": "This end point display all request made by a user",
-        "produces": [
-          "application/json"
-        ],
+        "produces": ["application/json"],
         "security": [
           {
             "Bearer": []
@@ -341,7 +331,7 @@
         }
       }
     },
-    "/requests/:id": {
+    "/requests/{requestId}": {
       "delete": {
         "tags": ["Delete request"],
         "summary": "Delete a travel request",
@@ -356,12 +346,12 @@
         ],
         "parameters": [
           {
-            "id": "parameter",
-            "description": "parameter needed to delete a trip",
+            "name": "requestId",
+            "in": "path",
+            "description": "id of the request to be deleted",
             "required": true,
-            "schema": {
-              "$ref": "#/definitions/BookTrip"
-            }
+            "type": "integer",
+            "format": "int64"
           }
         ],
         "responses": {
@@ -377,6 +367,43 @@
           "409": {
             "description": "you already have a trip booked around this period, you may choose to cancel and make a multi-city request"
           }
+        }
+      }
+    },
+    "patch": {
+      "tags": ["request"],
+      "summary": "Edit a travel request",
+      "description": "This endpoint edits a one-way trip request",
+      "operationId": "editTrip",
+      "consumes": ["application/json"],
+      "produces": ["application/json"],
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "requestId",
+          "in": "path",
+          "description": "id of the request to be edited",
+          "required": true,
+          "type": "integer",
+          "format": "int64"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Request updated successfully",
+          "schema": {
+            "$ref": "#/definitions/RequestResponse"
+          }
+        },
+        "400": {
+          "description": "departureDate is required"
+        },
+        "409": {
+          "description": "you already have a trip booked around this period, you may choose to cancel and make a multi-city request"
         }
       }
     }
@@ -489,10 +516,7 @@
         },
         "type": {
           "type": "string",
-          "enum": [
-            "one-way",
-            "return"
-          ]
+          "enum": ["one-way", "return"]
         },
         "departureDate": {
           "type": "string",
@@ -559,10 +583,7 @@
               },
               "type": {
                 "type": "string",
-                "enum": [
-                  "one-way",
-                  "return"
-                ]
+                "enum": ["one-way", "return"]
               },
               "departureDate": {
                 "type": "string",

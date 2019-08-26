@@ -29,6 +29,22 @@ export default class RequestService {
    * @memberof RequestService
    */
   static userTripRequests(requestDetails) {
-    return Request.findAll({ where: { userId:requestDetails } });
+    return Request.findAll({ where: { userId: requestDetails } });
+  }
+
+  /**
+     * @method editTrip
+     * @description Medium between the database and travelRequest Controller
+     * @static
+     * @param {object} requestDetails - data object
+     * @param {object} requestId - data object
+     * @returns {object} JSON response
+     * @memberof RequestService
+     */
+  static editTrip(requestDetails, requestId) {
+    const updatedUser = Request.update({ ...requestDetails }, {
+      where: { id: requestId }
+    });
+    return updatedUser;
   }
 }

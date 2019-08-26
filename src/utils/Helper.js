@@ -1,10 +1,8 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import dotenv from 'dotenv';
 import models from '../database/models';
 import Responses from './Responses';
 
-dotenv.config();
 
 const secret = process.env.SECRET;
 const senderEmail = process.env.EMAIL;
