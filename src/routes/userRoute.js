@@ -19,4 +19,9 @@ userRoute.post(
   UserController.signin
 );
 
+userRoute.get(
+  '/users/verifyEmail/:token',
+  UserController.verifyUserEmail
+);
+
 export default userRoute;
