@@ -4,7 +4,10 @@ import sinonChai from 'sinon-chai';
 import app from '../index';
 import Helper from '../utils/Helper';
 import UserService from '../services/UserService';
+<<<<<<< HEAD
 
+=======
+>>>>>>> feat(verify email):verify user email
 
 chai.use(chaiHttp);
 chai.use(sinonChai);
@@ -87,7 +90,6 @@ describe('/POST Signup route', () => {
         expect(res.body.data).to.have.property('token');
         expect(res.body).to.have.property('message')
           .eql('Kindly confirm the link sent to your email account to complete your registration');
-        expect(res.body).to.have.property('message');
         done(err);
       });
   });
@@ -245,6 +247,7 @@ describe('/users/verifyEmail/:token', () => {
     }).finally(done);
   });
 });
+
 describe('POST api/v1/users/reset', () => {
   it('should send a registered user a reset password link', done => {
     chai
@@ -273,7 +276,6 @@ describe('POST api/v1/users/reset', () => {
       });
   });
 });
-
 
 describe('POST api/v1/users/reset/:token', () => {
   before(done => {

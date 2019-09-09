@@ -3,7 +3,6 @@ import bcrypt from 'bcryptjs';
 import models from '../database/models';
 import Responses from './Responses';
 
-
 const secret = process.env.SECRET;
 const senderEmail = process.env.EMAIL;
 /**

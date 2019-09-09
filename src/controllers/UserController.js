@@ -10,6 +10,7 @@ import Responses from '../utils/Responses';
  * @exports UserController
  */
 export default class UserController {
+
   /**
    * @method
    * @description Implements signup endpoint

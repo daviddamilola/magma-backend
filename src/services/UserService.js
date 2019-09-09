@@ -53,7 +53,6 @@ export default class UserService {
   }
 
   /**
-<<<<<<< 51c18a263ed07951304d0d497d55de1c672a86ab
    * @method resetPassword
    * @description Signs in user with valid credentials
    * @static
