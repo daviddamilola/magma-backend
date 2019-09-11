@@ -1,5 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import session from 'express-session';
 import cors from 'cors';
 import morgan from 'morgan';
 import Debug from 'debug';
@@ -41,14 +42,10 @@ app.get('/', (req, res) => {
   Responses.send(res);
 });
 
-// catch 404 and forward to error handler
-app.use((req, res, next) => {
-  const err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+app.all('/*', (req, res) => {
+  Responses.setError(404, 'The requested url was not found on this server');
+  Responses.send(res);
 });
-
-// / error handlers
 
 // development error handler
 // will print stacktrace

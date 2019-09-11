@@ -1,18 +1,16 @@
 import UserService from '../services/UserService';
-import Responses from '../utils/Responses';
 import Helper from '../utils/Helper';
-<<<<<<< HEAD
-import sendEmail from '../utils/email';
-=======
-import Email from '../utils/email';
->>>>>>> feat(password-reset): add password reset endpoints
+import sendEmail from '../utils/mailer';
 import transporter from '../utils/transporter';
+import Responses from '../utils/Responses';
+
 /**
  * @class
  * @description A container class for all controllers
  * @exports UserController
  */
 export default class UserController {
+
   /**
    * @method
    * @description Implements signup endpoint
@@ -24,6 +22,7 @@ export default class UserController {
    */
   static signup(req, res) {
     const user = req.body;
+    const msg = 'Kindly confirm the link sent to your email account to complete your registration';
     UserService.signup(user).then(response => {
       const result = {
         id: response.id,
@@ -31,8 +30,11 @@ export default class UserController {
         firstName: response.firstName,
         lastName: response.lastName
       };
-      const token = Helper.generateToken({ id: response.id, email: response.email });
-      Responses.setSuccess(201, 'user account created successfully', { token, ...result });
+      const { email } = result;
+      const token = Helper.generateToken({ id: response.id, email, });
+      const mailData = Helper.composeVerificationMail(req, email, token);
+      sendEmail(transporter(), mailData);
+      Responses.setSuccess(201, msg, { token, ...result });
       return Responses.send(res);
     }).catch(() => {
       Responses.setError(500, 'database error');
@@ -75,7 +77,7 @@ export default class UserController {
     const emailOptions = Helper.constructResetEmail(req, email);
     const validUser = await Helper.verifyExistingEmail(email);
     if (validUser) {
-      sendEmail(transporter, emailOptions);
+      sendEmail(transporter(), emailOptions);
       Responses.setSuccess(200, 'a password reset link has been sent to your email');
       return Responses.send(res);
     }
@@ -117,5 +119,77 @@ export default class UserController {
       }
     );
     return Responses.send(res);
+  }
+
+  /**
+   * @method
+   * @description Email verification endpoint
+   * @static
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @returns {object} JSON response
+   * @memberof UserController
+   */
+  static async verifyUserEmail(req, res) {
+    const { token } = req.params;
+    const { id, email } = Helper.verifyToken(token);
+    const user = await UserService.findUser(id);
+    if (email === user.email) {
+      UserService.updateUser(email);
+    }
+    Responses.setSuccess(200, 'Your account has been verified');
+    return Responses.send(res);
+  }
+
+  /**
+   * @method updateUserProfile
+   * @description Implements userprofile settings endpoint
+   * @static
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @returns {object} JSON response
+   * @memberof UserController
+  */
+  static updateUserProfile(req, res) {
+    const { body, user, params } = req;
+    if (user.email !== params.email) {
+      Responses.setError(401, 'You are not allowed to edit this profile');
+      return Responses.send(res);
+    }
+    UserService.updateUserProfile(body, user.id, params.email)
+      .then(updateUserProfile => {
+        delete updateUserProfile[0].dataValues.password;
+        Responses.setSuccess(200, 'user account updated successfully', updateUserProfile[0]);
+        return Responses.send(res);
+      }).catch(() => {
+        Responses.setError(500, 'database error');
+        return Responses.send(res);
+      });
+  }
+
+  /**
+   * @method retrieveUserProfile
+   * @description Implements userprofile settings endpoint
+   * @static
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @returns {object} JSON response
+   * @memberof UserController
+   */
+  static retrieveUserProfile(req, res) {
+    const {user, params} = req;
+    if (user.email !== params.email){
+      Responses.setError(401, 'You are not allowed to see this profile');
+      return Responses.send(res);
+    }
+    UserService.retrieveUser(user.id, params.email)
+      .then(retrieveUser => {
+        delete retrieveUser.dataValues.password;
+        Responses.setSuccess(200, 'user account retrieved successfully', retrieveUser);
+        return Responses.send(res);
+      }).catch(() => {
+          Responses.setError(500, 'database error');
+          return Responses.send(res);
+      });
   }
 }

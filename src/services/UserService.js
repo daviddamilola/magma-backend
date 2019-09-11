@@ -1,7 +1,6 @@
 import models from '../database/models';
 import Helper from '../utils/Helper';
 
-
 const { User } = models;
 
 /**
@@ -20,14 +19,14 @@ export default class UserService {
    */
   static async signup(userCredentials) {
     let {
-      firstName, lastName, email, password
+      firstName, lastName, email, password, managerEmail
     } = userCredentials;
     firstName = firstName.trim();
     lastName = lastName.trim();
     email = email.trim().toLowerCase();
     password = await Helper.hashPassword(password);
     const user = {
-      firstName, lastName, email, password
+      firstName, lastName, email, password, managerEmail
     };
     return User.create(user);
   }
@@ -69,5 +68,63 @@ export default class UserService {
       returning: true,
       plain: true,
     });
+  }
+
+  /**
+   * @method findUser
+   * @description Medium between the database and UserController
+   * @static
+   * @param {object} id - data number
+   * @returns {object} JSON response
+   * @memberof UserService
+  */
+  static async findUser(id) {
+    const user = await User.findByPk(id);
+    return user;
+  }
+
+  /**
+   * @method retrieveUser
+   * @description Medium between the database and UserController
+   * @static
+   * @param {id}
+   * @param {email}
+   * @returns {object} JSON response
+   * @memberof UserService
+   */
+  static async retrieveUser(id, email) {
+    const user = await User.findOne({ returning: true, where: { id, email } });
+    return user;
+  }
+
+  /**
+   * @method updateUser
+   * @description Medium between the database and UserController
+   * @static
+   * @param {object} email - data number
+   * @returns {object} JSON response
+   * @memberof UserService
+  */
+  static updateUser(email) {
+    User.update(
+      { isVerified: true },
+      { where: { email } }
+    );
+  }
+
+  /**
+   * @method updateUserProfile
+   * @description Medium between the database and UserController
+   * @static
+   * @param {object} userCredentials - data object
+   * @param {id}
+   * @param {email}
+   * @returns {object} JSON response
+   * @memberof UserService
+   */
+  static async updateUserProfile(userCredentials, id, email) {
+    const data = userCredentials;
+    const user = await User.update(data, { returning: true, where: { id, email } });
+    return user[1];
   }
 }
