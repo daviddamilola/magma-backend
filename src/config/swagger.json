@@ -253,6 +253,93 @@
           }
         }
       }
+    },
+    "/user/profile/{email}": {
+      "patch": {
+        "tags": ["user profile"],
+        "summary": "Update user profile",
+        "description": "This endpoint updates a user profile",
+        "operationId": "updateProfile",
+        "produces": ["application/json"],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "required": true,
+            "description": "user email",
+            "schema": {
+              "type": "string",
+              "format": "email"
+            }
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Information needed to update a user",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserProfile"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "user account updated successfully",
+            "schema": {
+              "$ref": "#/definitions/UserProfileResponse"
+            }
+          },
+          "400": {
+            "description": "email is required, and should follow this format: myemail@domain.com"
+          },
+          "500": {
+            "description": "database error"
+          }
+        }
+      },
+      "get": {
+        "tags": ["user profile"],
+        "summary": "Retrieve user profile",
+        "description": "This endpoint retrieve a user profile",
+        "operationId": "retrieveProfile",
+        "produces": ["application/json"],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "required": true,
+            "description": "user email",
+            "schema": {
+              "type": "string",
+              "format": "email"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user account retrieved successfully",
+            "schema": {
+              "$ref": "#/definitions/UserProfileResponse"
+            }
+          },
+          "400": {
+            "description": "email is required, and should follow this format: myemail@domain.com"
+          },
+          "500": {
+            "description": "database error"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -304,6 +391,50 @@
           "type": "string"
         },
         "message": {
+          "type": "string"
+        }
+      }
+    },
+    "Signin": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string",
+          "format": "password"
+        }
+      }
+    },
+    "UserProfile": {
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "phoneNumber": {
+          "type": "string"
+        },
+        "gender": {
+          "type": "string"
+        },
+        "preferredLanguage": {
+          "type": "string"
+        },
+        "birthDate": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "department": {
+          "type": "string"
+        },
+        "lineManager": {
           "type": "string"
         }
       }

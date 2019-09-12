@@ -1,7 +1,6 @@
 import models from '../database/models';
 import Helper from '../utils/Helper';
 
-
 const { User } = models;
 
 /**
@@ -54,6 +53,7 @@ export default class UserService {
   }
 
   /**
+<<<<<<< 51c18a263ed07951304d0d497d55de1c672a86ab
    * @method resetPassword
    * @description Signs in user with valid credentials
    * @static
@@ -79,8 +79,22 @@ export default class UserService {
    * @returns {object} JSON response
    * @memberof UserService
   */
-  static async findUser(id) {
-    const user = await User.findByPk(id);
+  static findUser(id) {
+    return User.findByPk(id)
+      .then(response => response.dataValues)
+      .catch(err => err);
+  }
+  /**
+   * @method retrieveUser
+   * @description Medium between the database and UserController
+   * @static
+   * @param {id}
+   * @param {email}
+   * @returns {object} JSON response
+   * @memberof UserService
+  */
+  static async retrieveUser(id, email) {
+    let user = await User.findOne({ returning: true, where: { id, email } });
     return user;
   }
 
@@ -97,5 +111,19 @@ export default class UserService {
       { isVerified: true },
       { where: { email } }
     );
+  }
+
+  /** 
+   * @method updateUserProfile
+   * @param {object} userCredentials - data object
+   * @param {id}
+   * @param {email}
+   * @returns {object} JSON response
+   * @memberof UserService
+  */
+  static async updateUserProfile(userCredentials, id, email) {
+    const data = userCredentials;
+    const user = await User.update(data, { returning: true, where: { id, email } });
+    return user[1];
   }
 }

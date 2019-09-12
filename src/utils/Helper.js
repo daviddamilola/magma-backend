@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import models from '../database/models';
 import Responses from './Responses';
@@ -24,7 +24,7 @@ export default class Helper {
    */
   static generateToken(payload) {
     const token = jwt.sign(payload, secret, {
-      expiresIn: '1hr',
+      expiresIn: '24hr',
     });
     return token;
   }
