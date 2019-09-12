@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "description": "Documentation to test the endpoints for the Barefoot Normad API"
   },
-  "host": "localhost:5000",
+  "host": "localhost:4000",
   "basePath": "/api/v1",
   "tags": [
     {
@@ -26,10 +26,10 @@
     }
   },
   "paths": {
-    "/users/signup": {
+    "/user/signup": {
       "post": {
         "tags": ["auth"],
-        "summary": "Creates a new user",
+        "summary": "Create a new user",
         "description": "This endpoint registers a new user",
         "operationId": "createUser",
         "consumes": ["application/json"],
@@ -184,12 +184,18 @@
     },
     "/requests": {
       "post": {
-        "tags": ["request"],
+        "tags": [
+          "request"
+        ],
         "summary": "Book a travel request",
         "description": "This endpoint books a one-way trip request",
         "operationId": "bookTrip",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "security": [
           {
             "Bearer": []
@@ -217,7 +223,33 @@
             "description": "departureDate is required"
           },
           "409": {
-            "description": "you already have a trip booked around this period, you may choose to cancel and make a multi-city request"
+            "description": "You already have a trip slated for this day you may choose to make a multi-city request"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "request"
+        ],
+        "summary": "a user can view all request he/she made",
+        "description": "This end point display all request made by a user",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trip requests retrieved successfully",
+            "schema": {
+              "$ref": "#/definitions/RequestResponse"
+            }
+          },
+          "404": {
+            "description": "You are yet to book a make a trip request"
           }
         }
       }
@@ -276,18 +308,6 @@
         }
       }
     },
-    "Signin": {
-      "type": "object",
-      "properties": {
-        "email": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string",
-          "format": "password"
-        }
-      }
-    },
     "BookTrip": {
       "type": "object",
       "properties": {
@@ -299,7 +319,10 @@
         },
         "type": {
           "type": "string",
-          "enum": ["one-way", "return"]
+          "enum": [
+            "one-way",
+            "return"
+          ]
         },
         "departureDate": {
           "type": "string",
@@ -366,7 +389,10 @@
               },
               "type": {
                 "type": "string",
-                "enum": ["one-way", "return"]
+                "enum": [
+                  "one-way",
+                  "return"
+                ]
               },
               "departureDate": {
                 "type": "string",
@@ -381,10 +407,6 @@
               },
               "accommodation": {
                 "type": "string"
-              },
-              "status": {
-                "type": "string",
-                "enum": ["open", "closed"]
               }
             }
           }
