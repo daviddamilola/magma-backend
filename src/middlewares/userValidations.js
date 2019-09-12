@@ -10,19 +10,16 @@ import Helper from '../utils/Helper';
  * @param {object} next
  * @returns {object} JSON response
  */
-const emailExists = (req, res, next) => {
-  let { email } = req.body;
-  email = email.trim().toLowerCase();
-  models.User.findOne({ where: { email } }).then(data => {
-    if (data) {
-      Responses.setError(409, 'email already in use');
-      return Responses.send(res);
-    }
-    next();
-  }).catch(() => {
-    Responses.setError(500, 'database error');
+
+
+const emailExists = async (req, res, next) => {
+  const { email } = req.body;
+  const check = await models.User.findOne({ where: { email } });
+  if (check) {
+    Responses.setError(409, 'email already in use');
     return Responses.send(res);
-  });
+  }
+  next();
 };
 
 /**

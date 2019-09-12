@@ -52,4 +52,50 @@ export default class UserService {
     };
     return user;
   }
+
+  /**
+   * @method resetPassword
+   * @description Signs in user with valid credentials
+   * @static
+   * @param {string} password
+   * @param {string} email
+   * @returns {object} JSON response
+   * @memberof UserService
+   */
+  static async resetPassword(password, email) {
+    const newPassword = await Helper.hashPassword(password);
+    return User.update({ password: newPassword }, {
+      where: { email },
+      returning: true,
+      plain: true,
+    });
+  }
+
+  /**
+   * @method findUser
+   * @description Medium between the database and UserController
+   * @static
+   * @param {object} id - data number
+   * @returns {object} JSON response
+   * @memberof UserService
+  */
+  static async findUser(id) {
+    const user = await User.findByPk(id);
+    return user;
+  }
+
+  /**
+   * @method updateUser
+   * @description Medium between the database and UserController
+   * @static
+   * @param {object} email - data number
+   * @returns {object} JSON response
+   * @memberof UserService
+  */
+  static updateUser(email) {
+    User.update(
+      { isVerified: true },
+      { where: { email } }
+    );
+  }
 }

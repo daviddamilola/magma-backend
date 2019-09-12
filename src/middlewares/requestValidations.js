@@ -13,11 +13,15 @@ import Helper from '../utils/Helper';
    */
 const validateTripRequest = (req, res, next) => {
   const userId = req.user.id;
-  let { departureDate } = req.body;
+  const { type } = req.body;
+  let { departureDate, returnDate } = req.body;
   departureDate = new Date(departureDate).toISOString();
+  if (type === 'return') returnDate = new Date(returnDate).toISOString();
   models.Request.findAll({ where: { userId } }).then(data => {
-    const conflicts = Helper.checkTrip(data, departureDate);
-    return conflicts;
+    if (data.length > 0) {
+      const conflicts = Helper.checkTrip(data, departureDate, returnDate);
+      return conflicts;
+    }
   }).then(messages => {
     if (messages && messages.length > 0) {
       Responses.setError(409, 'you already have a trip booked around this pe'
@@ -41,10 +45,11 @@ const validateTripRequest = (req, res, next) => {
    * @returns {object} JSON response
    */
 const validateTrip = (req, res, next) => {
+  const { type } = req.body;
   let { departureDate, returnDate } = req.body;
   departureDate = new Date(departureDate).toISOString();
   returnDate = returnDate ? returnDate.trim() : undefined;
-  if (returnDate) {
+  if (type === 'one-way' && returnDate) {
     Responses.setError(400, 'you cannot have returnDate for a one-way trip');
     return Responses.send(res);
   }

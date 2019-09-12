@@ -1,5 +1,5 @@
-import Responses from '../utils/Responses';
 import Helper from '../utils/Helper';
+import Responses from '../utils/Responses';
 
 /**
  * @class Auth

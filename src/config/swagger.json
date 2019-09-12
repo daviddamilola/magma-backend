@@ -48,7 +48,7 @@
         ],
         "responses": {
           "201": {
-            "description": "user account created successfully",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/AuthResponse"
             }
@@ -58,6 +58,30 @@
           },
           "400": {
             "description": "email is required, and should follow this format: myemail@domain.com"
+          }
+        }
+      }
+    },
+    "/users/verifyEmail/:token": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Verify email",
+        "description": "This endpoint verify a new user's email address",
+        "operationId": "verifyUser",
+        "consumes": ["string"],
+        "produces": "Update database",
+        "security": [],
+        "parameters": [
+          {
+            "in": "email",
+            "name": "token",
+            "description": "Contains email and id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Your account has been verified"
           }
         }
       }
@@ -94,6 +118,66 @@
           },
           "401": {
             "description": "Your password is incorrect."
+          }
+        }
+      }
+    },
+    "/users/reset": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Sends a registered user a password reset link",
+        "description": "This endpoint registers sends a registered user a link to reset their password",
+        "operationId": "resetPassword",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "security": [],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Information needed send a user a password reset link",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/passwordReset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/passwordResetResponse"
+            }
+          }
+        }
+      }
+    },
+    "/users/reset/:token": {
+      "patch": {
+        "tags": ["auth"],
+        "summary": "Updates a registered user password",
+        "description": "This endpoint updates the user password in the database",
+        "operationId": "updatePassword",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "security": [],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Information needed to update the user password",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/updatePassword"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/updatePasswordResponse"
+            }
           }
         }
       }
@@ -140,21 +224,55 @@
     }
   },
   "definitions": {
-    "Signup": {
+    "PasswordReset": {
       "type": "object",
       "properties": {
-        "firstName": {
-          "type": "string"
-        },
-        "lastName": {
-          "type": "string"
-        },
         "email": {
           "type": "string"
-        },
+        }
+      }
+    },
+    "UpdatePassword": {
+      "type": "object",
+      "properties": {
         "password": {
-          "type": "string",
-          "format": "password"
+          "type": "string"
+        }
+      }
+    },
+    "UpdatePasswordResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "data": {
+          "id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "date"
+          },
+          "updatedAt": {
+            "type": "date"
+          }
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "PasswordResetResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
         }
       }
     },
@@ -187,6 +305,10 @@
           "type": "string",
           "format": "date"
         },
+        "returnDate": {
+          "type": "string",
+          "format": "date"
+        },
         "reason": {
           "type": "string"
         },
@@ -212,13 +334,13 @@
                 "type": "integer",
                 "format": "int64"
               },
-              "email": {
-                "type": "string"
-              },
               "firstName": {
                 "type": "string"
               },
               "lastName": {
+                "type": "string"
+              },
+              "email": {
                 "type": "string"
               }
             }
@@ -242,13 +364,17 @@
               "destination": {
                 "type": "string"
               },
+              "type": {
+                "type": "string",
+                "enum": ["one-way", "return"]
+              },
               "departureDate": {
                 "type": "string",
                 "format": "date"
               },
-              "type": {
+              "returnDate": {
                 "type": "string",
-                "enum": ["one-way", "return"]
+                "format": "date"
               },
               "reason": {
                 "type": "string"

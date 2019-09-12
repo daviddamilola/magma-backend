@@ -19,6 +19,7 @@ const password = Joi.string().required().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(
 
 const required = Joi.string().trim().required();
 const str = Joi.string().allow('');
+const date = Joi.date().iso();
 
 export default {
   signup: Joi.object().keys({
@@ -34,11 +35,21 @@ export default {
   request: Joi.object().keys({
     origin: required.label('origin is required'),
     destination: required.label('destination is required'),
-    type: required.valid('one-way')
-      .label('type is required and can only be "one-way"'),
-    departureDate: Joi.date().iso().required()
+    type: required.valid('one-way', 'return')
+      .label('type is required and can either be "one-way" or "return"'),
+    departureDate: date.required()
       .label('departureDate is required and must follow this format: YYYY-MM-DD'),
+    returnDate: date.when('type', {
+      is: 'return', then: date.min(Joi.ref('departureDate')).required()
+    })
+      .concat(date.when('type', { is: 'one-way', then: date.allow('') }))
+      .label('returnDate is required for a "return" trip,'
+      + ' it cannot come before departureDate'
+      + ' and must follow this format: YYYY-MM-DD'),
     reason: str.label('reason must be a string'),
     accommodation: str.label('accommodation must be a string')
-  })
+  }),
+  updatePassword: Joi.object().keys({
+    password
+  }),
 };
