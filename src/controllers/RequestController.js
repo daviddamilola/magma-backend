@@ -65,5 +65,43 @@ export default class RequestController {
       Responses.setError(500, 'database error');
       return Responses.send(res);
     });
+  };
+
+  /**
+   * @method
+   * @description Implements get all user requests endpoint
+   * @static
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @returns {object} JSON response
+   * @memberof RequestController
+   */
+  static userTripRequests(req, res) {
+    RequestService.userTripRequests(req.user.id)
+      .then(userTrips => {
+        const responses = Helper.getRequestFormat(userTrips);
+        return responses.send(res)
+      });
+  }
+
+  /**
+   * @method
+   * @description Implements Manager get available requests endpoint
+   * @static
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @returns {object} JSON response
+   * @memberof RequestController
+   */
+  static managerAvailRequests(req, res) {
+    if (req.user.role !== 'requestManager'){
+        Responses.setError(401, 'You are authorized to view trip requests');
+        return Responses.send(res);      
+    }
+    RequestService.managerAvailRequests(req.user.id)
+      .then(availableTrips => {
+        const responses = Helper.getRequestFormat(availableTrips);
+        return responses.send(res)
+      });
   }
 }

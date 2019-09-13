@@ -20,7 +20,7 @@ export default class Helper {
    */
   static generateToken(payload) {
     const token = jwt.sign(payload, secret, {
-      expiresIn: '1hr',
+      expiresIn: '24hr',
     });
     return token;
   }
@@ -182,4 +182,23 @@ export default class Helper {
     if (conflicts.includes(true)) return true;
     return false;
   }
+
+  /**
+   * @method getRequestFormat
+   * @description return 404 if no request is found
+   * @param {object} myRequests - Array of user's request
+   * @param {object} travelDate - Departure date in the request body
+   * @param {object} backDate - Return date in the request body
+   * @returns {object} JSON response
+   * @memberof Helper
+   */
+  static getRequestFormat(requests, res) {
+    if (requests.length === 0) {
+      Responses.setError(404, 'There are no trip requests presently');
+      return Responses;
+    }
+    Responses.setSuccess(200, 'Trip requests retrieved successfully', requests);
+    return Responses;
+  }
+
 }

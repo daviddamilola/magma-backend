@@ -6,7 +6,7 @@ chai.use(chaiHttp);
 
 const { expect } = chai;
 
-let userToken;
+let userToken, userToken3;
 
 describe('/POST Requests route', () => {
   before(done => {
@@ -339,5 +339,95 @@ describe('/POST Requests route', () => {
           .eql('you already have a trip booked around this period');
         done(err);
       });
+  });
+});
+describe('/GET Requests route', () => {
+  before(done => {
+    chai
+      .request(app)
+      .post('/api/v1/users/signin')
+      .send({
+        email: 'notmadiba@gmail.com',
+        password: 'Tosin1234',
+      })
+      .end((err, res) => {
+        userToken3 = res.body.data.token;
+        done(err);
+      });
+  });
+  it('should return an error if a user hasno travel requests yet', done => {
+    chai
+      .request(app)
+      .get('/api/v1/requests')
+      .set('authorization', `Bearer ${userToken3}`)
+      .end((err, res) => {
+        expect(res).to.have.status(404);
+        expect(res.body).to.be.an('object');
+        expect(res.body).to.have.property('status').eql('error');
+        expect(res.body).to.have.property('message')
+          .eql('There are no trip requests presently');
+        done(err);
+      });
+  });
+  it('should return success if a user has travel requests', done => {
+    chai
+      .request(app)
+      .get('/api/v1/requests')
+      .set('authorization', `Bearer ${userToken}`)
+      .end((err, res) => {
+        console.log('user', res.body.data)
+        expect(res).to.have.status(200);
+        expect(res.body).to.be.an('object');
+        expect(res.body).to.have.property('status').eql('success');
+        expect(res.body).to.have.property('message')
+          .eql('Trip requests retrieved successfully');
+        done(err);
+      });
+  });
+
+  describe('/GET Manager Requests route', () => {
+    it('should return an error if there are no available travel requests yet', done => {
+      chai
+        .request(app)
+        .get('/api/v1/manager/requests')
+        .set('authorization', `Bearer ${userToken}`)
+        .end((err, res) => {
+          expect(res).to.have.status(404);
+          expect(res.body).to.be.an('object');
+          expect(res.body).to.have.property('status').eql('error');
+          expect(res.body).to.have.property('message')
+            .eql('There are no trip requests presently');
+          done(err);
+        });
+    });
+    it('should return an error if user is not a manager', done => {
+      chai
+        .request(app)
+        .get('/api/v1/manager/requests')
+        .set('authorization', `Bearer ${userToken}`)
+        .end((err, res) => {
+          expect(res).to.have.status(401);
+          expect(res.body).to.be.an('object');
+          expect(res.body).to.have.property('status').eql('error');
+          expect(res.body).to.have.property('message')
+            .eql('You are authorized to view trip requests');
+          done(err);
+        });
+    });
+    it('should return success if a there are travel requests available', done => {
+      chai
+        .request(app)
+        .get('/api/v1/requests')
+        .set('authorization', `Bearer ${userToken}`)
+        .end((err, res) => {
+          console.log('manager', res.body.data)
+          expect(res).to.have.status(200);
+          expect(res.body).to.be.an('object');
+          expect(res.body).to.have.property('status').eql('success');
+          expect(res.body).to.have.property('message')
+            .eql('Trip requests retrieved successfully');
+          done(err);
+        });
+    });
   });
 });

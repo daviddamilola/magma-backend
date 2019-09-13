@@ -14,6 +14,7 @@ module.exports = {
     userId: {
       type: Sequelize.INTEGER, onDelete: 'CASCADE', references: { model: 'Users', key: 'id' }
     },
+    lineManager: { type:Sequelize.INTEGER, allowNull: true },
     createdAt: { type: Sequelize.DATE, allowNull: false },
     updatedAt: { type: Sequelize.DATE, allowNull: false }
   }),

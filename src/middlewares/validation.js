@@ -31,10 +31,31 @@ const validateChildRequests = (req, res, next) => {
     );
     errorMessages = Helper.buildErrorResponse(result);
     if (errorMessages) {
+      Responses.setError(400, error);
       return Responses.send(res);
     }
   }
   next();
 };
 
-export default { validate, validateChildRequests };
+/**
+ * @function
+ * @description Validates user credentials
+ * @param {object} path - The profile setting schema
+ * @returns {object} JSON response
+ */
+const validateEmail = path => (req, res, next) => {
+  const email = req.params;
+  if (_.has(Schemas, path)) {
+    const schema = _.get(Schemas, path, 0);
+    const response = Joi.validate(email, schema, { abortEarly: false });
+    if (response.error) {
+      const error = response.error.details[0].context.label;
+      Responses.setError(400, error);
+      return Responses.send(res);
+    }
+  }
+  next();
+};
+
+export default { validate, validateEmail, validateChildRequests };
