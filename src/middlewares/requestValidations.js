@@ -63,4 +63,29 @@ const validateTrip = (req, res, next) => {
   next();
 };
 
-export default { validateTripRequest, validateTrip };
+/**
+   * @function
+   * @description Validates delete request
+   * @static
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {object} next
+   * @returns {object} JSON response
+   */
+const validateDelete = (req, res, next) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+  models.Request.findOne({ where: { id } }).then(response => {
+    if (!response) {
+      Responses.setError(404, 'Request does not exist');
+      return Responses.send(res);
+    }
+    if (response.dataValues.userId !== userId) {
+      Responses.setError(403, "You cannot delete another person's request");
+      return Responses.send(res);
+    }
+    next();
+  });
+};
+
+export default { validateTripRequest, validateTrip, validateDelete };

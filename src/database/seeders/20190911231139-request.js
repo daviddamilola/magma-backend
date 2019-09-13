@@ -20,12 +20,32 @@ module.exports = {
     updatedAt: new Date()
   },
   {
+    userId: 2,
+    origin: 'New York',
+    destination: 'Uganda',
+    type: 'one-way',
+    departureDate: '2019-11-25',
+    reason: 'New office',
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
     userId: 5,
     origin: 'Texas',
     destination: 'Syria',
     type: 'one-way',
     departureDate: '2020-03-15',
     reason: 'Relocation',
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    userId: 2,
+    origin: 'Lagos',
+    destination: 'Nairobi',
+    type: 'one-way',
+    departureDate: '2019-08-25',
+    reason: 'meeting',
     createdAt: new Date(),
     updatedAt: new Date()
   }], {})

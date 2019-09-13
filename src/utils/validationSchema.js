@@ -72,4 +72,7 @@ export default {
   updatePassword: Joi.object().keys({
     password
   }),
+  id: Joi.object().keys({
+    id: Joi.number().integer().required().label('Params must be integer'),
+  })
 };

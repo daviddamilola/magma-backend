@@ -15,7 +15,7 @@ describe('/POST Requests route', () => {
       .post('/api/v1/users/signin')
       .send({
         email: 'tosin@mail.com',
-        password: 'Tosin1234',
+        password: 'Password1',
       })
       .end((err, res) => {
         userToken = res.body.data.token;
@@ -183,8 +183,69 @@ describe('/POST Requests route', () => {
         expect(res.body).to.have.property('status').eql('error');
         expect(res.body).to.have.property('message')
           .eql('you already have a trip booked around this period, '
-          + 'you may choose to cancel and make a multi-city request');
+            + 'you may choose to cancel and make a multi-city request');
         done(err);
+      });
+  });
+
+  it('should cancel request successfully', done => {
+    chai
+      .request(app)
+      .delete('/api/v1/requests/1')
+      .set('authorization', `Bearer ${userToken}`)
+      .end((err, res) => {
+        const { body } = res;
+        expect(res.status).to.equal(201);
+        expect(res.status).to.be.a('number');
+        expect(body).to.be.an('object');
+        expect(body).to.have.property('message')
+          .eql('Request has been deleted successfully');
+        done();
+      });
+  });
+
+  it('should return an error if the request Id is not a number', done => {
+    chai
+      .request(app)
+      .delete('/api/v1/requests/n')
+      .set('authorization', `Bearer ${userToken}`)
+      .end((err, res) => {
+        const { body } = res;
+        expect(res.status).to.be.a('number');
+        expect(body).to.be.an('object');
+        expect(body).to.have.property('message');
+        done();
+      });
+  });
+
+  it('should return an error if the requester is not the owner of the request', done => {
+    chai
+      .request(app)
+      .delete('/api/v1/requests/3')
+      .set('authorization', `Bearer ${userToken}`)
+      .end((err, res) => {
+        const { body } = res;
+        expect(res.status).to.equal(403);
+        expect(res.status).to.be.a('number');
+        expect(body).to.be.an('object');
+        expect(body).to.have.property('message');
+        done();
+      });
+  });
+
+  it('should return an error if request is not found', done => {
+    chai
+      .request(app)
+      .delete('/api/v1/requests/78')
+      .set('authorization', `Bearer ${userToken}`)
+      .end((err, res) => {
+        const { body } = res;
+        expect(res.status).to.equal(404);
+        expect(res.status).to.be.a('number');
+        expect(body).to.be.an('object');
+        expect(body).to.have.property('message')
+          .eql('Request does not exist');
+        done();
       });
   });
 });
