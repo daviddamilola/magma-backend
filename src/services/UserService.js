@@ -52,4 +52,32 @@ export default class UserService {
     };
     return user;
   }
+
+  /**
+   * @method findUser
+   * @description Medium between the database and UserController
+   * @static
+   * @param {object} id - data number
+   * @returns {object} JSON response
+   * @memberof UserService
+  */
+  static async findUser(id) {
+    const user = await User.findByPk(id);
+    return user;
+  }
+
+  /**
+   * @method updateUser
+   * @description Medium between the database and UserController
+   * @static
+   * @param {object} email - data number
+   * @returns {object} JSON response
+   * @memberof UserService
+  */
+  static updateUser(email) {
+    User.update(
+      { isVerified: true },
+      { where: { email } }
+    );
+  }
 }

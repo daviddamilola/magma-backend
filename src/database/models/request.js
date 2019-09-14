@@ -7,7 +7,7 @@ export default (sequelize, DataTypes) => {
     returnDate: { type: DataTypes.DATE },
     reason: { type: DataTypes.STRING },
     accommodation: { type: DataTypes.STRING },
-    status: { type: DataTypes.STRING, defaultValue: 'open' }
+    status: { type: DataTypes.ENUM, values: ['accepted', 'rejected', 'open'], defaultValue: 'open' }
   }, {});
   Request.associate = models => {
     Request.belongsTo(models.User, {

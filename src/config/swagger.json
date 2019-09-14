@@ -62,6 +62,30 @@
         }
       }
     },
+    "/users/verifyEmail/:token": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Verify email",
+        "description": "This endpoint verify a new user's email address",
+        "operationId": "verifyUser",
+        "consumes": ["string"],
+        "produces": "Update database",
+        "security": [],
+        "parameters": [
+          {
+            "in": "email",
+            "name": "token",
+            "description": "Contains email and id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Your account has been verified"
+          }
+        }
+      }
+    },
     "/users/signin": {
       "post": {
         "tags": ["auth"],

@@ -1,10 +1,13 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../index';
+import Helper from '../utils/Helper';
+import UserService from '../services/UserService';
 
 chai.use(chaiHttp);
 
 const { expect } = chai;
+let token;
 
 describe('/POST Signup route', () => {
   it('should return an error if user credentials are invalid', done => {
@@ -60,7 +63,7 @@ describe('/POST Signup route', () => {
         expect(res.body).to.be.an('object');
         expect(res.body.data).to.have.property('token');
         expect(res.body).to.have.property('message')
-          .eql('user account created successfully');
+          .eql('Kindly confirm the link sent to your email account to complete your registration');
         done(err);
       });
   });
@@ -150,5 +153,50 @@ describe('/POST Signin route', () => {
           .eql('Login successful.');
         done(err);
       });
+  });
+});
+
+describe('/users/verifyEmail/:token', () => {
+  before(done => {
+    token = Helper.generateToken({ id: 1, email: 'naimatdavid@mail.com' });
+    done();
+  });
+  it('should update isVerified column to true', done => {
+    chai
+      .request(app)
+      .get(`/api/v1/users/verifyEmail/${token}`)
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body).to.be.an('object');
+        expect(res.body).to.have.property('status');
+        expect(res.body).to.have.property('message');
+        done();
+      });
+  }).timeout(5000);
+
+  it('should return error if token is not provided', done => {
+    chai
+      .request(app)
+      .get('/api/v1/users/verifyEmail')
+      .end((err, res) => {
+        expect(res).to.have.status(404);
+        expect(res.body).to.be.an('object');
+        expect(res.body).to.have.property('status');
+        expect(res.body).to.have.property('status').eql('error');
+        done();
+      });
+  }).timeout(5000);
+
+  it('should return user object if account id is provided', done => {
+    UserService.findUser(1).then(user => {
+      expect(user).to.be.an('object');
+      expect(user).to.have.property('dataValues');
+    }).finally(done);
+  });
+
+  it('shoul return null if id is not provided', done => {
+    UserService.findUser().then(user => {
+      expect(user).to.be.a('null');
+    }).finally(done);
   });
 });
