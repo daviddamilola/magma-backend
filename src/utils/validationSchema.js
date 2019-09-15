@@ -50,6 +50,6 @@ export default {
     accommodation: str.label('accommodation must be a string')
   }),
   id: Joi.object().keys({
-  requestId: Joi.number().integer().required().label('Params must be integer'), 
+  id: Joi.number().integer().required().label('Params must be integer'), 
   })
-  };
+};

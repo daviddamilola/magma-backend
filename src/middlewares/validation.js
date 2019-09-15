@@ -24,14 +24,14 @@ const validate = path => (req, res, next) => {
 /**
  * @function
  * @description Validates user credentials
- * @param {object} path - The signup schema
+ * @param {object} path - The requestId schema
  * @returns {object} JSON response
  */
 const validateParam = path => (req, res, next) => {
-  const user = req.param;
+  const id = req.params;
   if (_.has(Schemas, path)) {
     const schema = _.get(Schemas, path);
-    const response = Joi.validate(user, schema, { abortEarly: false });
+    const response = Joi.validate(id, schema, { abortEarly: false });
     const errors = Helper.buildErrorResponse(response);
     if (errors) return Responses.send(res);
   }

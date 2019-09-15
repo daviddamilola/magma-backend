@@ -1,6 +1,9 @@
 import RequestService from '../services/RequestService';
 import Responses from '../utils/Responses';
 import Helper from '../utils/Helper';
+import models from '../database/models';
+
+const { Request, User } = models;
 
 /**
  * @class
@@ -44,14 +47,26 @@ export default class RequestController {
    * @returns {object} JSON response
    * @memberof RequestController
    */
-  static async cancelTrip(id, res) {
-      try {
-        const deleted = await RequestService.deleteTrip(id);
-        Responses.setSuccess(201, deleted);
+  static deleteTrip(req, res) {
+    const { id } = req.params;
+    Request.findOne({ 
+      where: { 
+        id: Number(id) 
+      }, 
+      include: [{
+        model: User,
+        as: 'requester',
+      }]
+      }).then(response => {
+        return response.destroy();
+      }).then(() => {
+        Responses.setSuccess(201, 'Request has been deleted successfully');
         return Responses.send(res);
-      } catch (error) {
+      }).catch((error) => {
+        console.log(error);
         Responses.setError(500, 'database error');
-        return Responses.send(res);
-      }
-  }
+        return Responses.send(res); 
+  });
+}
+
 }

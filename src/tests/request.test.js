@@ -194,13 +194,13 @@ describe('/POST Requests route', () => {
       .delete(`/api/v1/requests/${requestId}`)
       .set('authorization', `Bearer ${userToken}`)
       .end((err, res) => {
-      const { body } = res;
-      expect(res.status).to.equal(201);
-      expect(res.status).to.be.a('number');
-      expect(body).to.be.an('object');
-      expect(body).to.have.property('message')
-      .eql('Request successfully cancelled!');
-      done();
+        const { body } = res;
+        expect(res.status).to.equal(201);
+        expect(res.status).to.be.a('number');
+        expect(body).to.be.an('object');
+        expect(body).to.have.property('message')
+        .eql('Request successfully cancelled!');
+        done();
     });
   });
   it('should return an error if the request Id is not a number', done => {
@@ -209,13 +209,11 @@ describe('/POST Requests route', () => {
       .delete(`/api/v1/requests/n`)
       .set('authorization', `Bearer ${userToken}`)
       .end((err, res) => {
-      const { body } = res;
-      expect(res.status).to.equal(500);
-      expect(res.status).to.be.a('number');
-      expect(body).to.be.an('object');
-      expect(body).to.have.property('message')
-      .eql('database error');
-      done();
+       const { body } = res;
+          expect(res.status).to.be.a('number');
+          expect(body).to.be.an('object');
+          expect(body).to.have.property('message')
+          done();
     });
   });
   it('should return an error if the requester is not the owner of the request', done => {
@@ -224,28 +222,27 @@ describe('/POST Requests route', () => {
       .delete(`/api/v1/requests/${requestId}`)
       .set('authorization', `Bearer ${userToken}`)
       .end((err, res) => {
-      const { body } = res;
-      expect(res.status).to.equal(500);
-      expect(res.status).to.be.a('number');
-      expect(body).to.be.an('object');
-      expect(body).to.have.property('message')
-      .eql('database error');
-      done();
+        const { body } = res;
+        expect(res.status).to.equal(400);
+        expect(res.status).to.be.a('number');
+        expect(body).to.be.an('object');
+        expect(body).to.have.property('message');
+        done();
     });
   });
   it('should return an error if request is not found', (done) => {
     chai
-      .request(app)
-      .delete(`/api/v1/requests/78`)
-      .set('authorization', `Bearer ${userToken}`)
-      .end((err, res) => {
-       const { body } = res;
-       expect(res.status).to.equal(500);
-       expect(res.status).to.be.a('number');
-       expect(body).to.be.an('object');
-      expect(body).to.have.property('message')
-      .eql('database error');
-      done();
+    .request(app)
+    .delete(`/api/v1/requests/78`)
+    .set('authorization', `Bearer ${userToken}`)
+    .end((err, res) => {
+     const { body } = res;
+     expect(res.status).to.equal(404);
+     expect(res.status).to.be.a('number');
+     expect(body).to.be.an('object');
+     expect(body).to.have.property('message')
+     .eql('Request does not exist');
+     done();
       });
     });
 });
