@@ -1,6 +1,6 @@
 import models from '../database/models';
 
-const { Request } = models;
+const { Request, ChildRequest } = models;
 
 /**
  * @class
@@ -31,20 +31,32 @@ export default class RequestService {
   static userTripRequests(requestDetails) {
     return Request.findAll({ where: { userId: requestDetails } });
   }
-
+  
   /**
-     * @method editTrip
-     * @description Medium between the database and travelRequest Controller
-     * @static
-     * @param {object} requestDetails - data object
-     * @param {object} requestId - data object
-     * @returns {object} JSON response
-     * @memberof RequestService
-     */
+   * @method editTrip
+   * @description Medium between the database and travelRequest Controller
+   * @static
+   * @param {object} requestDetails - data object
+   * @param {object} requestId - data object
+   * @returns {object} JSON response
+   * @memberof RequestService
+   */
   static editTrip(requestDetails, requestId) {
     const updatedUser = Request.update({ ...requestDetails }, {
       where: { id: requestId }
     });
     return updatedUser;
+  }
+  /**
+   * @method requests
+   * @method multiCity
+   * @description Medium between the database and travelRequest Controller
+   * @static
+   * @param {object} requestDetails - data object
+   * @returns {object} JSON response
+   * @memberof RequestService
+   */
+  static multiCity(requestDetails) {
+    return ChildRequest.bulkCreate(requestDetails, { returning: true });
   }
 }

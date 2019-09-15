@@ -41,6 +41,22 @@ const validateEmail = path => (req, res, next) => {
   next();
 };
 
+const validateChildRequests = (req, res, next) => {
+  const { childRequests, type } = req.body;
+  let errorMessages;
+  if (childRequests && type === 'multi-city') {
+    const result = Joi.validate(
+      childRequests,
+      (_.get(Schemas, 'childRequest')), { abortEarly: false }
+    );
+    errorMessages = Helper.buildErrorResponse(result);
+    if (errorMessages) {
+      return Responses.send(res);
+    }
+  }
+  next();
+};
+
 /**
  * @function
  * @description Validates user credentials
@@ -58,4 +74,4 @@ const validateParam = path => (req, res, next) => {
   next();
 };
 
-export default { validate, validateParam, validateEmail };
+export default { validate, validateParam, validateEmail, validateChildRequests };

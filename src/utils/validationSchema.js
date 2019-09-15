@@ -15,6 +15,8 @@ const password = Joi.string().required().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(
 const required = Joi.string().trim().required();
 const str = Joi.string().allow('');
 const date = Joi.date().iso();
+const reason = str.label('reason must be a string');
+const accommodation = str.label('accommodation must be a string');
 
 export default {
   signup: Joi.object().keys({
@@ -55,8 +57,8 @@ export default {
   request: Joi.object().keys({
     origin: required.label('origin is required'),
     destination: required.label('destination is required'),
-    type: required.valid('one-way', 'return')
-      .label('type is required and can either be "one-way" or "return"'),
+    type: required.valid('one-way', 'return', 'multi-city')
+      .label('type is required and can only be "one-way", "return" or "multi-city"'),
     departureDate: date.required()
       .label('departureDate is required and must follow this format: YYYY-MM-DD'),
     returnDate: date.when('type', {
@@ -64,15 +66,39 @@ export default {
     })
       .concat(date.when('type', { is: 'one-way', then: date.allow('') }))
       .label('returnDate is required for a "return" trip,'
-      + ' it cannot come before departureDate'
-      + ' and must follow this format: YYYY-MM-DD'),
-    reason: str.label('reason must be a string'),
-    accommodation: str.label('accommodation must be a string')
+        + ' it cannot come before departureDate'
+        + ' and must follow this format: YYYY-MM-DD'),
+    reason,
+    accommodation
+  }),
+  patchRequest: Joi.object().keys({
+    origin: Joi.string().trim().label('origin is required'),
+    destination: Joi.string().trim().label('destination is required'),
+    type: Joi.string().trim().valid('one-way', 'return', 'multi-city')
+      .label('type is required and can only be "one-way", "return" or "multi-city"'),
+    departureDate: date.required()
+      .label('departureDate is required and must follow this format: YYYY-MM-DD'),
+    returnDate: date.when('type', {
+      is: 'return', then: date.min(Joi.ref('departureDate')).required()
+    })
+      .concat(date.when('type', { is: 'one-way', then: date.allow('') }))
+      .label('returnDate is required for a "return" trip,'
+        + ' it cannot come before departureDate'
+        + ' and must follow this format: YYYY-MM-DD'),
+    reason,
+    accommodation
   }),
   updatePassword: Joi.object().keys({
     password
   }),
   id: Joi.object().keys({
     id: Joi.number().integer().required().label('Params must be integer'),
-  })
+  }),
+  childRequest: Joi.array().items(Joi.object().keys({
+    destination: required.label('destination is required in childRequests'),
+    departureDate: date.required()
+      .label('departureDate is required in childRequests and must follow this format: YYYY-MM-DD'),
+    reason,
+    accommodation
+  }))
 };

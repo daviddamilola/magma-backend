@@ -4,41 +4,39 @@ import validation from '../middlewares/validation';
 import requestValidations from '../middlewares/requestValidations';
 import Auth from '../middlewares/Auth';
 
-const { userAuth } = Auth;editTrip
-const { bookTrip, userTripRequests, deleteTrip, editTrip } = RequestController;
-const { validateTrip, validateTripRequest, validateDelete, validateOpenTrip } = requestValidations;
-
 const requestRoute = express.Router();
 
 requestRoute.post(
   '/requests',
-  userAuth,
+  Auth.userAuth,
   validation.validate('request'),
-  validateTrip,
-  validateTripRequest,
-  bookTrip
+  validation.validateChildRequests,
+  requestValidations.validateChildRequest,
+  requestValidations.validateTrip,
+  requestValidations.validateTripRequest,
+  RequestController.bookTrip
 );
 requestRoute.delete(
   '/requests/:id',
-  userAuth,
+  Auth.userAuth,
   validation.validateParam('id'),
-  validateDelete,
-  deleteTrip
+  requestValidations.validateDelete,
+  RequestController.deleteTrip
 );
 
 requestRoute.get(
   '/requests',
   Auth.userAuth,
-  userTripRequests
+  RequestController.userTripRequests
 );
 
 requestRoute.patch(
   '/requests/:id',
-  userAuth,
-  validation.validate('request'),
-  validateTrip,
-  validateOpenTrip,
-  editTrip
+  Auth.userAuth,
+  validation.validate('patchRequest'),
+  requestValidations.validateTrip,
+  requestValidations.validateOpenTrip,
+  RequestController.editTrip
 );
 
 export default requestRoute;

@@ -4,10 +4,6 @@ import sinonChai from 'sinon-chai';
 import app from '../index';
 import Helper from '../utils/Helper';
 import UserService from '../services/UserService';
-<<<<<<< HEAD
-
-=======
->>>>>>> feat(verify email):verify user email
 
 chai.use(chaiHttp);
 chai.use(sinonChai);

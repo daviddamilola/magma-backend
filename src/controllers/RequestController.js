@@ -30,6 +30,10 @@ export default class RequestController {
     };
     request = Helper.formatRequest(request);
     RequestService.bookTrip(request).then(response => {
+      if (response.type === 'multi-city') {
+        const { childRequests } = req.body;
+        return RequestController.multiCity(childRequests, response, res);
+      }
       Responses.setSuccess(201, 'travel request booked successfully', response);
       return Responses.send(res);
     }).catch(() => {
@@ -70,15 +74,7 @@ export default class RequestController {
    */
   static deleteTrip(req, res) {
     const { id } = req.params;
-    Request.findOne({
-      where: {
-        id: Number(id)
-      },
-      include: [{
-        model: User,
-        as: 'requester',
-      }]
-    }).then(response => response.destroy()).then(() => {
+    Request.findOne({ where: { id } }).then(response => response.destroy()).then(() => {
       Responses.setSuccess(201, 'Request has been deleted successfully');
       return Responses.send(res);
     }).catch(() => {
@@ -86,21 +82,50 @@ export default class RequestController {
       return Responses.send(res);
     });
   }
-/**
- * @method
- * @description Implements edit travel request endpoint
- * @static
- * @param {object} req - Request object
- * @param {object} res - Response object
- * @returns {object} JSON response
- * @memberof RequestController
- */
+
+  /**
+   * @method
+   * @description Implements edit travel request endpoint
+   * @static
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @returns {object} JSON response
+   * @memberof RequestController
+   */
   static editTrip(req, res) {
     const requestId = req.params.id;
     const requestDetails = req.body;
     Helper.formatRequest(requestDetails);
     RequestService.editTrip(requestDetails, requestId).then(response => {
       Responses.setSuccess(200, 'travel request updated successfully', response);
+      return Responses.send(res);
+    }).catch(() => {
+      Responses.setError(500, 'database error');
+      return Responses.send(res);
+    });
+  }
+
+  /**
+   * @method
+     * @description Control multi-city requests
+     * @static
+     * @param {object} children
+     * @param {object} data
+     * @param {object} res
+     * @returns {object} JSON response
+     * @memberof RequestController
+     */
+  static multiCity(children, data, res) {
+    let childRequests = children.map(child => ({
+      destination: child.destination,
+      departureDate: child.departureDate,
+      reason: child.reason,
+      accommodation: child.accommodation,
+      requestId: data.id
+    }));
+    childRequests = childRequests.map(Helper.formatRequest);
+    RequestService.multiCity(childRequests).then(response => {
+      Responses.setSuccess(201, 'travel request booked successfully', [data, ...response]);
       return Responses.send(res);
     }).catch(() => {
       Responses.setError(500, 'database error');
